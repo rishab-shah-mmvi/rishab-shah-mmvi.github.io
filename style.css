@@ -12,7 +12,7 @@
    3.  Skip link and navigation bar (Flexbox, sticky position)
    4.  Ledger layout
    5.  Entries and margin notes (relative / absolute position)
-   6.  Cards (CSS Grid)
+   6.  Cards (CSS Grid, Flexbox inside each card)
    7.  Activities table and list
    8.  Footer
    9.  Responsive rules (media queries)
@@ -99,6 +99,12 @@ a {
 
 a:hover {
   color: var(--margin-red);
+}
+
+/* A linked place name or tag keeps the colour of its own line */
+.place a,
+.tag a {
+  color: inherit;
 }
 
 a:focus-visible {
@@ -200,11 +206,28 @@ a:focus-visible {
    and has no margin rule. The ID selector overrides the
    section rule above. */
 #intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;    /* the portrait stands on the navy line */
+  gap: 40px;
   margin-left: 0;
-  padding: 84px 0 60px;
+  padding: 84px 0 0;
   border-left: none;
   border-top: none;
   border-bottom: 2px solid var(--ink);
+}
+
+.intro-text {
+  padding-bottom: 60px;
+}
+
+/* multiply blends the photo's white background into the paper colour */
+.portrait {
+  display: block;
+  flex-shrink: 0;
+  width: 210px;
+  height: auto;
+  mix-blend-mode: multiply;
 }
 
 #about {
@@ -286,6 +309,11 @@ a:focus-visible {
   color: var(--ink-soft);
 }
 
+.place a:hover,
+.tag a:hover {
+  color: var(--ink);        /* linked names darken on hover */
+}
+
 .entry > :last-child {
   margin-bottom: 0;         /* no extra gap under the last line of an entry */
 }
@@ -314,6 +342,9 @@ a:focus-visible {
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 22px 24px 24px;
   background-color: var(--card);
   border: 1px solid var(--line);
@@ -337,6 +368,22 @@ a:focus-visible {
   border: 1px solid var(--margin-red);
   color: var(--margin-red);
   font-size: 0.82rem;
+}
+
+/* A short line quoted from the letter */
+.card blockquote {
+  margin: 14px 0 0;
+  font-family: "Libre Caslon Display", Georgia, serif;
+  font-size: 1.3rem;
+  line-height: 1.3;
+}
+
+/* Link to the document; margin-top: auto pushes it to the bottom of the card */
+.card .card-link {
+  margin-top: auto;
+  padding-top: 14px;
+  font-size: 0.96rem;
+  font-weight: 600;
 }
 
 
@@ -464,7 +511,18 @@ a:focus-visible {
   }
 
   #intro {
-    padding: 60px 0 46px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 60px 0 0;
+  }
+
+  .intro-text {
+    padding-bottom: 40px;
+  }
+
+  .portrait {
+    width: 170px;
   }
 
   .margin-note {
@@ -511,7 +569,15 @@ a:focus-visible {
   }
 
   #intro {
-    padding: 42px 0 36px;
+    padding: 42px 0 0;
+  }
+
+  .intro-text {
+    padding-bottom: 30px;
+  }
+
+  .portrait {
+    width: 140px;
   }
 
   .card-grid,
@@ -588,13 +654,17 @@ a:focus-visible {
     line-height: 1.36;
   }
 
-  /* The menu and buttons are no use on paper. The Contact section
-     is hidden too, because the contact line under the name replaces it. */
+  /* The menu, buttons, photo and footer are no use on paper. The Contact
+     section is hidden too, because the contact line under the name replaces it. */
   #site-header,
+  #site-footer,
   #contact,
   .skip-link,
   .quick-links,
-  .footer-links {
+  .footer-links,
+  .portrait,
+  .card blockquote,
+  .card .card-link {
     display: none;
   }
 
@@ -648,16 +718,21 @@ a:focus-visible {
   /* 174px = 150px margin + 4px rule + 20px padding */
   .ledger section {
     margin-left: 150px;
-    padding: 9px 0 9px 20px;
+    padding: 8px 0 8px 20px;
   }
 
   #intro {
+    display: block;
     margin-left: 0;
     padding: 0 0 10px;
   }
 
+  .intro-text {
+    padding-bottom: 0;
+  }
+
   .entry {
-    margin-bottom: 9px;
+    margin-bottom: 7px;
   }
 
   .margin-note {
@@ -700,6 +775,7 @@ a:focus-visible {
     padding: 1px 7px;
   }
 
+
   .ledger-table {
     width: calc(100% + 174px);
     margin-left: -174px;
@@ -720,12 +796,6 @@ a:focus-visible {
 
   .plain-list li {
     padding: 4px 0;
-  }
-
-  #site-footer {
-    max-width: none;
-    margin: 0;
-    padding: 8px 0 0;
   }
 
   /* Keep each block whole instead of splitting it across two pages */
