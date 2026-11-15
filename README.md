@@ -19,8 +19,8 @@ My personal resume website, built with plain HTML and CSS for my Web Development
 
 ## Design
 
-The page is laid out like an account ledger. Dates sit in a left margin, a red double rule separates them from the entries, and thin blue lines divide the sections.
+Quiet and minimal: a white page, black and grey text and one blue accent. Each section works like a spec sheet, with the title on the left and the details on the right.
 
-- Fonts: Libre Caslon Display for headings and Public Sans for body text, both from Google Fonts
-- Colours: off-white paper, navy ink, one red accent
-- Layout: Flexbox for the navigation bar and intro, CSS Grid for the cards, and media queries for tablets, phones and print
+- Fonts: Libre Baskerville for my name and Inter for everything else, both from Google Fonts
+- Colours: white, near-black, grey and one blue accent
+- Layout: Flexbox for the navigation bar and entries, CSS Grid for the sections and cards, and media queries for tablets, phones and print
