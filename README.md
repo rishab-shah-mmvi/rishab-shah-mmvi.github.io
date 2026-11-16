@@ -14,7 +14,7 @@ My personal resume website, built with plain HTML and CSS for my Web Development
 | `favicon.png` | The small icon in the browser tab |
 | `og-image.png` | The preview image shown when the link is shared |
 | `rishab-shah-resume.pdf` | My resume as a PDF |
-| `letter-of-recommendation-*.pdf` | Two letters of recommendation |
+| `letter-of-recommendation-*.pdf` | Four letters of recommendation |
 | `research-*.pdf` | Three research papers |
 
 ## Design
@@ -24,3 +24,5 @@ Quiet and minimal: a white page, black and grey text and one blue accent. Each s
 - Fonts: Libre Baskerville for my name and Inter for everything else, both from Google Fonts
 - Colours: white, near-black, grey and one blue accent
 - Layout: Flexbox for the navigation bar and entries, CSS Grid for the sections and cards, and media queries for tablets, phones and print
+- Text: sentences are justified so both edges line up; headings, labels and cards stay left-aligned
+- Small screens: the menu becomes one slim row that stays at the top and scrolls sideways

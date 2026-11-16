@@ -15,10 +15,11 @@
    5.  Section layout (CSS Grid, sticky titles)
    6.  Entries and fact lists
    7.  Cards (CSS Grid, Flexbox inside each card)
-   8.  Activities table and list
-   9.  Footer
-   10. Responsive rules (media queries)
-   11. Print styles
+   8.  Justified text
+   9.  Activities table and list
+   10. Footer
+   11. Responsive rules (media queries)
+   12. Print styles
    ========================================================== */
 
 
@@ -207,6 +208,7 @@ a:focus-visible {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  text-wrap: balance;       /* when it wraps, the lines come out a similar length */
 }
 
 .lead {
@@ -215,6 +217,7 @@ a:focus-visible {
   color: var(--muted);
   font-size: 1.18rem;
   line-height: 1.45;
+  text-wrap: balance;
 }
 
 .print-only {
@@ -407,7 +410,24 @@ a:focus-visible {
 }
 
 
-/* ---------- 8. Activities table and list ---------- */
+/* ---------- 8. Justified text ---------- */
+
+/* Sentences are justified, so both edges of the text line up with
+   the thin lines above and below. The two selectors pick the paragraphs
+   that sit directly inside a section or an entry. :not() leaves out the
+   large opening line and the place names, which read better left-aligned.
+   Cards are narrow, so their text is not justified either.
+   hyphens: auto lets a long word break at the end of a line, which
+   keeps the gaps between words even. */
+.spec-body > p:not(.statement),
+.entry > p:not(.place) {
+  max-width: none;
+  text-align: justify;
+  hyphens: auto;
+}
+
+
+/* ---------- 9. Activities table and list ---------- */
 
 .spec-table {
   width: 100%;
@@ -458,7 +478,7 @@ a:focus-visible {
 }
 
 
-/* ---------- 9. Footer ---------- */
+/* ---------- 10. Footer ---------- */
 
 #site-footer {
   display: flex;
@@ -484,30 +504,51 @@ a:focus-visible {
 }
 
 
-/* ---------- 10. Responsive rules ---------- */
+/* ---------- 11. Responsive rules ---------- */
 
-/* Tablets and small laptops: the two columns become one, so each title
-   sits above its section, and the navigation bar scrolls with the page. */
+/* Tablets and phones: the two columns become one, so each title sits
+   above its section, and the menu becomes one slim row. */
 @media (max-width: 860px) {
   h1 {
     font-size: 3.4rem;
   }
 
-  #site-header {
-    position: static;
+  /* The menu still stays at the top. If the links do not fit across
+     the screen, the row scrolls sideways instead of wrapping onto
+     extra lines, so it never takes up more than one line. */
+  #site-nav {
+    height: auto;
+    padding: 0;
   }
 
-  #site-nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    height: auto;
-    padding: 12px 24px;
+  .brand {
+    display: none;          /* the name is already the first thing on the page */
   }
 
   .nav-links {
-    flex-wrap: wrap;
-    gap: 4px 22px;
+    gap: 0;
+    width: 100%;
+    padding: 0 12px;
+    overflow-x: auto;
+    scrollbar-width: none;  /* no scrollbar under the links */
+
+    /* the right edge fades out, a hint that there are more links */
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
+
+  .nav-links li:last-child {
+    padding-right: 28px;    /* lets the last link scroll clear of the faded edge */
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 13px 12px;     /* tall enough to tap comfortably */
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .nav-links a:focus-visible {
+    outline-offset: -4px;   /* keeps the focus ring inside the scrolling row */
   }
 
   #intro {
@@ -517,7 +558,7 @@ a:focus-visible {
   .spec {
     grid-template-columns: 1fr;
     padding: 52px 24px;
-    scroll-margin-top: 0;
+    scroll-margin-top: 47px;   /* the slim menu is about 48px tall */
   }
 
   .spec h2 {
@@ -526,10 +567,34 @@ a:focus-visible {
   }
 }
 
-/* Phones: one card per row, smaller headings, dates under their titles */
+/* Phones: thumb-sized buttons, one card per row, smaller headings
+   and dates under their titles */
 @media (max-width: 600px) {
   html {
     font-size: 100%;
+  }
+
+  /* The four intro links become a 2 x 2 grid of large pill buttons */
+  .quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .pill,
+  .button {
+    display: block;
+    padding: 12px 6px;
+    border-radius: 980px;
+    font-size: 0.94rem;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;    /* each label stays on one line */
+  }
+
+  .pill {
+    background-color: var(--surface);
   }
 
   h1 {
@@ -635,7 +700,7 @@ a:focus-visible {
 }
 
 
-/* ---------- 11. Print styles ----------
+/* ---------- 12. Print styles ----------
    Printing the page (or "Save as PDF") gives a clean two-page
    document: no menu, photo or buttons, smaller type, and a
    narrower title column. */
@@ -714,16 +779,23 @@ a:focus-visible {
     font-size: 1rem;
   }
 
+  /* On paper the title floats to the left of its section.
+     Unlike a grid, this lets a long section continue onto the next page. */
   .spec {
-    grid-template-columns: 112px 1fr;
-    gap: 0 18px;
+    display: block;
     max-width: none;
-    padding: 9px 0;
+    padding: 8px 0;
   }
 
   .spec h2 {
     position: static;
+    float: left;
+    width: 112px;
     margin-bottom: 0;
+  }
+
+  .spec-body {
+    margin-left: 130px;
   }
 
   .statement {
