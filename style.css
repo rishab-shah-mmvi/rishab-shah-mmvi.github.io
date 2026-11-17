@@ -17,7 +17,7 @@
    6.  Entries, fact lists and document links
    7.  Offers list
    8.  Cards (CSS Grid, Flexbox inside each card)
-   9.  Activities grid (CSS Grid with tiles of different sizes)
+   9.  Activities timeline (CSS Grid, ::before draws the dots)
    10. Justified text
    11. Letters band, contact band and footer
    12. Motion (transitions and keyframes)
@@ -32,8 +32,8 @@
 
 :root {
   --bg: #ffffff;              /* page background */
-  --surface: #f5f5f7;         /* light grey: cards, tiles and the letters band */
-  --tint: #eaf2fb;            /* pale blue: the top of the page and one highlight tile */
+  --surface: #f5f5f7;         /* light grey: cards and the letters band */
+  --tint: #eaf2fb;            /* pale blue: the wash at the top of the page */
   --ink: #1d1d1f;             /* near-black: main text, and the dark band at the end */
   --muted: #68686d;           /* grey: secondary text */
   --line: #d2d2d7;            /* thin lines between rows */
@@ -549,115 +549,89 @@ button:focus-visible {
 }
 
 
-/* ---------- 9. Activities grid ----------
-   A six-column grid. Tiles span two or three columns, and one
-   tile is two rows tall, so the block reads as one composition
-   instead of a table followed by a list. */
+/* ---------- 9. Activities timeline ----------
+   Newest first. Each year is one row of a two-column grid: the year
+   on the left, and on the right a thin vertical line (the left border
+   of the list) with a dot for every activity. ::before draws the dots. */
 
-.bento {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
+.timeline {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tile {
-  display: flex;
-  flex-direction: column;
-  grid-column: span 3;
-  min-width: 0;
-  padding: 22px 24px 24px;
-  background-color: var(--surface);
-  border-radius: 22px;
+.year-group {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 0 20px;
 }
 
-.tile-tall {
-  grid-row: span 2;
-}
-
-.tile-small {
-  grid-column: span 2;
-}
-
-.tile-dark {
-  background-color: var(--ink);
-  color: var(--on-dark);
-}
-
-.tile-tint {
-  background-color: var(--tint);
-}
-
-.tile-date {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.86rem;
+.year {
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 
-.tile-dark .tile-date {
-  color: var(--muted-on-dark);
+/* The last group covers several years, so its label is smaller and grey */
+.year-range {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
-/* The result or role is the large line in each tile */
-.tile-figure {
-  margin: 14px 0 0;
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-}
-
-.tile-tall .tile-figure {
-  margin-top: auto;         /* pushed to the bottom of the tall tile */
-  font-size: 2.9rem;
-}
-
-.tile-small .tile-figure {
-  margin-top: 0;
-  font-size: 1.55rem;
-}
-
-.tile-label {
-  margin: 6px 0 0;
-  font-size: 0.96rem;
-  line-height: 1.4;
-}
-
-.tile-doc {
-  margin: 12px 0 0;
-  font-size: 0.9rem;
-}
-
-.tile h3 {
-  margin-bottom: 10px;
-}
-
-.tile-list {
+.events {
   margin: 0;
-  padding: 0;
+  padding: 0 0 10px 30px;
   list-style: none;
-  font-size: 0.96rem;
+  border-left: 2px solid var(--line);
 }
 
-.tile-list li {
-  padding: 9px 0;
-  border-top: 1px solid var(--line);
+.event {
+  position: relative;
+  padding-bottom: 24px;
 }
 
-.tile-list strong {
-  display: block;
+.year-group:last-child .events,
+.year-group:last-child .event:last-child {
+  padding-bottom: 0;         /* the line stops at the last activity */
+}
+
+/* Each dot sits on the line, level with the first line of its title */
+.event::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: -37px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--bg);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+}
+
+/* The first activity of each year gets a filled dot */
+.event:first-child::before {
+  background-color: var(--accent);
+}
+
+/* The result or role is the larger line; the event sits under it in grey */
+.event-title {
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
-.tile-dark .tile-doc a {
-  color: var(--accent-on-dark);
+.event-label {
+  margin: 2px 0 0;
+  color: var(--muted);
 }
 
-.tile-dark .tile-doc a:focus-visible {
-  outline-color: var(--accent-on-dark);
+.event-doc {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
 }
 
 
@@ -667,7 +641,7 @@ button:focus-visible {
    the thin lines above and below. The two selectors pick the paragraphs
    that sit directly inside a section or an entry. :not() leaves out the
    large opening line and the place names, which read better left-aligned.
-   Cards and tiles are narrow, so their text is not justified either.
+   Cards are narrow, so their text is not justified either.
    hyphens: auto lets a long word break at the end of a line, which
    keeps the gaps between words even. */
 .spec-body > p:not(.statement),
@@ -825,8 +799,8 @@ button:focus-visible {
 /* ---------- 13. Responsive rules ---------- */
 
 /* Tablets and phones: the two columns become one. The links move into a
-   full-screen menu, and each section title becomes a slim bar that
-   stays under the header while its section is on screen. */
+   full-screen menu, and each section title stays just under the
+   header while its section is on screen. */
 @media (max-width: 860px) {
   h1 {
     font-size: 3.5rem;
@@ -916,31 +890,50 @@ button:focus-visible {
     scroll-margin-top: 52px;
   }
 
-  /* The section title: a slim bar across the full width that sticks
-     just below the header, like the left-hand titles do on a laptop. */
+  /* The section title sticks just below the header while its section
+     is on screen, like the left-hand titles do on a laptop. */
   .spec h2 {
     top: 52px;
     z-index: 5;
-    margin: 0 -24px 24px;
-    padding: 13px 24px;
-    background-color: rgb(255 255 255 / 96%);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line);
+    margin: 0 -24px 14px;
+    padding: 18px 24px 10px;
+    background-color: var(--bg);
     font-size: 1.3rem;
   }
 
+  /* No line under the title, as on a laptop. Instead a short fade
+     softens the text that scrolls underneath it. Over a plain
+     background the fade cannot be seen at all. */
+  .spec h2::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    height: 18px;
+    background-image: linear-gradient(to bottom, var(--bg), rgb(255 255 255 / 0%));
+    pointer-events: none;
+  }
+
   .band .spec h2 {
-    background-color: rgb(245 245 247 / 96%);
+    background-color: var(--surface);
+  }
+
+  .band .spec h2::after {
+    background-image: linear-gradient(to bottom, var(--surface), rgb(245 245 247 / 0%));
   }
 
   #site-footer .spec h2 {
-    background-color: rgb(29 29 31 / 96%);
-    border-bottom-color: var(--line-on-dark);
+    background-color: var(--ink);
+  }
+
+  #site-footer .spec h2::after {
+    background-image: linear-gradient(to bottom, var(--ink), rgb(29 29 31 / 0%));
   }
 }
 
-/* Phones: thumb-sized buttons, cards that swipe sideways, a simpler
-   activities grid and dates under their titles */
+/* Phones: thumb-sized buttons, cards that swipe sideways, a narrower
+   timeline and dates under their titles */
 @media (max-width: 600px) {
   html {
     font-size: 100%;
@@ -1034,40 +1027,31 @@ button:focus-visible {
     scroll-snap-align: start;
   }
 
-  /* Activities: two columns. Only the three short tiles share a row. */
-  .bento {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+  /* Activities: each year sits above its own part of the line */
+  .year-group {
+    grid-template-columns: 1fr;
   }
 
-  .tile {
-    grid-column: span 2;
-    padding: 20px 20px 22px;
+  .year {
+    margin-bottom: 12px;
+    font-size: 1.25rem;
   }
 
-  .tile-tall {
-    grid-row: auto;
+  .year-range {
+    font-size: 1rem;
   }
 
-  .tile-small {
-    grid-column: span 1;
+  .events {
+    padding: 0 0 22px 24px;
   }
 
-  .tile-full {
-    grid-column: span 2;
+  .event-title {
+    font-size: 1.15rem;
   }
 
-  .tile-figure {
-    font-size: 1.8rem;
-  }
-
-  .tile-tall .tile-figure {
-    margin-top: 14px;
-    font-size: 2.3rem;
-  }
-
-  .tile-small .tile-figure {
-    font-size: 1.35rem;
+  .events .event::before {
+    top: 6px;
+    left: -31px;
   }
 
   .footer-bar {
@@ -1104,7 +1088,7 @@ button:focus-visible {
   .lightbox,
   .quick-links,
   .docs,
-  .tile-doc,
+  .event-doc,
   .card blockquote,
   .card .card-link,
   .card .card-extra {
@@ -1173,7 +1157,11 @@ button:focus-visible {
     margin: 0;
     padding: 0;
     background-color: transparent;
-    border-bottom: none;
+  }
+
+  #main .spec h2::after,
+  #site-footer .spec h2::after {
+    content: none;
   }
 
   .spec-body {
@@ -1245,46 +1233,35 @@ button:focus-visible {
     margin-top: 3px;
   }
 
-  /* The tiles print as plain outlined boxes, three to a row */
-  .bento {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
+  /* The timeline prints smaller, with a narrow year column */
+  .year-group {
+    grid-template-columns: 70px 1fr;
   }
 
-  .tile {
-    grid-column: span 2;
-    padding: 6px 9px 7px;
-    background-color: transparent;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    color: var(--ink);
+  .year,
+  .year-range {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
   }
 
-  .tile-tall {
-    grid-row: auto;
+  .events {
+    padding: 0 0 4px 16px;
   }
 
-  .tile-figure,
-  .tile-tall .tile-figure,
-  .tile-small .tile-figure {
-    margin-top: 2px;
-    font-size: 1.15rem;
+  .event {
+    padding-bottom: 4px;
   }
 
-  .tile-label {
-    margin-top: 2px;
+  .event-title {
+    font-size: 1rem;
   }
 
-  .tile-dark .tile-date {
-    color: var(--muted);
-  }
-
-  .tile h3 {
-    margin-bottom: 2px;
-  }
-
-  .tile-list li {
-    padding: 2px 0;
+  .events .event::before {
+    top: 4px;
+    left: -21px;
+    width: 8px;
+    height: 8px;
   }
 
   .band {
@@ -1297,7 +1274,7 @@ button:focus-visible {
 
   .entry,
   .card,
-  .tile,
+  .event,
   .offers li {
     break-inside: avoid;
   }

@@ -26,7 +26,7 @@ Calm and minimal, with a little movement. Each section works like a spec sheet, 
 
 - Font: Inter, from Google Fonts, used for everything
 - Colours: white, near-black and grey, a pale blue wash at the top, one blue accent, and a dark band at the end
-- Layout: Flexbox for the navigation bar and entries, CSS Grid for the sections, cards and activity tiles, and media queries for tablets, phones and print
-- Text: sentences are justified so both edges line up; headings, labels, cards and tiles stay left-aligned
+- Layout: Flexbox for the navigation bar and entries, CSS Grid for the sections, cards and the activities timeline, and media queries for tablets, phones and print
+- Text: sentences are justified so both edges line up; headings, labels and cards stay left-aligned
 - Small screens: a full-screen menu that opens with the `:target` selector, section titles that stay under the header, and cards that swipe sideways
 - Motion: the intro fades in when the page loads, the photo enlarges when clicked, and three scroll effects run where the browser supports them. All of it switches off when a visitor has asked for reduced motion

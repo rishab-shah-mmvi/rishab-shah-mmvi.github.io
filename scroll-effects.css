@@ -57,10 +57,10 @@
       }
     }
 
-    /* 3. Tiles settle into place as they scroll into view. Only their
+    /* 3. Timeline entries settle into place as they scroll into view. Only their
           position and size change, never their opacity, so nothing
           can be left invisible. */
-    .tile {
+    .event {
       animation: settle linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 100%;
