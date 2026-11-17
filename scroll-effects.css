@@ -1,0 +1,85 @@
+/* ==========================================================
+   Rishab Shah | Resume website
+   scroll-effects.css
+
+   Three small effects that follow the scroll position. They use
+   scroll-driven animations (animation-timeline), a newer part of
+   CSS, so they are kept in their own file:
+
+   - Browsers that do not support them skip everything here and
+     show the normal page.
+   - The W3C validator does not know these properties yet, and
+     keeping them here leaves style.css fully valid.
+
+   The effects are also switched off on paper and for people who
+   have asked their device to reduce motion.
+   ========================================================== */
+
+@supports (animation-timeline: view()) {
+  @media screen and (prefers-reduced-motion: no-preference) {
+    /* 1. Reading progress: a thin blue line along the bottom of the
+          header grows from left to right as the page is scrolled. */
+    #site-header::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      background-color: var(--accent);
+      transform-origin: left;
+      animation: fill-line linear both;
+      animation-timeline: scroll(root);
+    }
+
+    @keyframes fill-line {
+      from {
+        transform: scaleX(0);
+      }
+
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    /* 2. The photo grows a little over the first stretch of scrolling.
+          The first animation in the list is the fade-in from style.css;
+          the second one is tied to the scroll position instead of time. */
+    #intro .portrait {
+      animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards, grow-photo linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0px 340px;
+    }
+
+    @keyframes grow-photo {
+      to {
+        transform: scale(1.16);
+      }
+    }
+
+    /* 3. Tiles settle into place as they scroll into view. Only their
+          position and size change, never their opacity, so nothing
+          can be left invisible. */
+    .tile {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    @keyframes settle {
+      from {
+        transform: translateY(26px) scale(0.97);
+      }
+    }
+  }
+
+  /* Cards do the same on wider screens. On phones they sit in a row
+     that swipes sideways, so they are left alone there. */
+  @media screen and (prefers-reduced-motion: no-preference) and (min-width: 601px) {
+    .card {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}

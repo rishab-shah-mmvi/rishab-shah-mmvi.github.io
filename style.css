@@ -2,50 +2,57 @@
    Rishab Shah | Resume website
    style.css
 
-   Design idea: quiet and minimal. A white page, black and grey
-   text and one blue accent. My name is set in a serif; everything
-   else uses one clean sans-serif. Each section works like a spec
-   sheet: the title stays on the left, the details run down the right.
+   Design idea: calm and minimal, with a little life in it.
+   One typeface (Inter) for everything. A white page that starts
+   with a pale blue wash, uses light grey for cards, and ends on
+   a dark band. Each section works like a spec sheet: the title
+   stays in view, the details run down beside or below it.
 
    Contents
    1.  Colour palette
    2.  Base styles (element selectors)
    3.  Skip link and navigation bar (Flexbox, sticky position)
-   4.  Intro
+   4.  Intro and the enlarged photo
    5.  Section layout (CSS Grid, sticky titles)
-   6.  Entries and fact lists
-   7.  Cards (CSS Grid, Flexbox inside each card)
-   8.  Justified text
-   9.  Activities table and list
-   10. Footer
-   11. Responsive rules (media queries)
-   12. Print styles
+   6.  Entries, fact lists and document links
+   7.  Offers list
+   8.  Cards (CSS Grid, Flexbox inside each card)
+   9.  Activities grid (CSS Grid with tiles of different sizes)
+   10. Justified text
+   11. Letters band, contact band and footer
+   12. Motion (transitions and keyframes)
+   13. Responsive rules (media queries)
+   14. Print styles
    ========================================================== */
 
 
 /* ---------- 1. Colour palette ----------
-   Six colours, saved as variables so the same
-   values are reused everywhere on the page. */
+   Saved as variables so the same values are
+   reused everywhere on the page. */
 
 :root {
-  --bg: #ffffff;          /* page background */
-  --surface: #f5f5f7;     /* light grey for cards and the photo tile */
-  --ink: #1d1d1f;         /* near-black, main text */
-  --muted: #68686d;       /* grey, secondary text */
-  --line: #d2d2d7;        /* hairlines between rows */
-  --accent: #0066cc;      /* blue, links and the main button */
+  --bg: #ffffff;              /* page background */
+  --surface: #f5f5f7;         /* light grey: cards, tiles and the letters band */
+  --tint: #eaf2fb;            /* pale blue: the top of the page and one highlight tile */
+  --ink: #1d1d1f;             /* near-black: main text, and the dark band at the end */
+  --muted: #68686d;           /* grey: secondary text */
+  --line: #d2d2d7;            /* thin lines between rows */
+  --accent: #0066cc;          /* blue: links and the main button */
+  --on-dark: #f5f5f7;         /* text on the dark band */
+  --muted-on-dark: #a1a1a6;   /* secondary text on the dark band */
+  --accent-on-dark: #2997ff;  /* a lighter blue that stays readable on dark */
+  --line-on-dark: #424245;    /* thin lines on the dark band */
 }
 
 
 /* ---------- 2. Base styles ---------- */
 
 * {
-  box-sizing: border-box;   /* padding and border count inside the width */
+  box-sizing: border-box;
 }
 
 html {
-  font-size: 106.25%;       /* 17px by default, but still follows the
-                               text size a visitor sets in their browser */
+  font-size: 106.25%;       /* 17px body text; every rem size follows from this */
 }
 
 body {
@@ -58,37 +65,36 @@ body {
 
 h1,
 h2,
-h3,
-h4 {
+h3 {
   margin: 0;
   font-weight: 600;
-  text-wrap: balance;       /* avoids one lonely word on the last line */
+  text-wrap: balance;       /* headings that wrap get lines of similar length */
 }
 
+/* With one typeface, size, weight and tight letter-spacing do the work
+   that a second font would otherwise do. */
 h1 {
-  margin-bottom: 18px;
-  font-family: "Libre Baskerville", Georgia, serif;
-  font-size: 4.4rem;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  margin-bottom: 16px;
+  font-size: 4.6rem;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
 }
 
 h2 {
   font-size: 1.8rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1.15;
 }
 
-h3,
-h4 {
+h3 {
   font-size: 1.06rem;
   letter-spacing: -0.01em;
   line-height: 1.35;
 }
 
 p {
-  max-width: 60ch;          /* about 75 characters a line, easy to read */
+  max-width: 60ch;
   margin: 0 0 12px;
 }
 
@@ -101,11 +107,9 @@ a:hover {
   text-decoration: underline;
 }
 
-.tag a {
-  text-decoration: underline;   /* a link inside a sentence needs more than colour */
-}
-
-a:focus-visible {
+/* A clear outline for anyone moving through the page with the Tab key */
+a:focus-visible,
+button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
@@ -114,13 +118,12 @@ a:focus-visible {
 
 /* ---------- 3. Skip link and navigation bar ---------- */
 
-/* The skip link waits above the top edge of the screen and
-   slides into view only when it receives keyboard focus. */
+/* Kept above the screen and only slides in when it receives keyboard focus */
 .skip-link {
   position: absolute;
   top: -80px;
   left: 16px;
-  z-index: 20;
+  z-index: 40;
   padding: 10px 16px;
   background-color: var(--ink);
   border-radius: 10px;
@@ -135,11 +138,12 @@ a:focus-visible {
   position: sticky;         /* stays at the top while the page scrolls */
   top: 0;
   z-index: 10;
-  background-color: rgb(255 255 255 / 88%);
+  background-color: rgb(255 255 255 / 86%);
   backdrop-filter: blur(18px);   /* the page shows through softly, like frosted glass */
   border-bottom: 1px solid var(--line);
 }
 
+/* Flexbox: name on the left, links on the right */
 #site-nav {
   display: flex;
   justify-content: space-between;
@@ -156,9 +160,15 @@ a:focus-visible {
   letter-spacing: -0.01em;
 }
 
+/* The Menu and Close buttons are only needed on small screens */
+.menu-open,
+.menu-close {
+  display: none;
+}
+
 .nav-links {
   display: flex;
-  gap: 28px;
+  gap: 26px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -167,6 +177,7 @@ a:focus-visible {
 .nav-links a {
   color: var(--muted);
   font-size: 0.82rem;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -175,30 +186,35 @@ a:focus-visible {
 }
 
 
-/* ---------- 4. Intro ---------- */
+/* ---------- 4. Intro and the enlarged photo ---------- */
 
+/* A pale blue wash at the top of the page that fades into white */
 #intro {
-  max-width: 1028px;
-  margin: 0 auto;
   padding: 84px 24px 88px;
+  background-image: linear-gradient(to bottom, var(--tint), var(--bg) 80%);
   text-align: center;
 }
 
-/* The photo sits on a soft grey tile with rounded corners.
-   multiply blends the photo's white background into the tile. */
+/* The photo is a button: clicking it opens a larger copy.
+   It sits on a white tile with rounded corners and a soft shadow. */
 .portrait {
+  display: block;
   width: 124px;
   margin: 0 auto 30px;
-  background-color: var(--surface);
+  padding: 0;
+  background-color: var(--bg);
+  border: 0;
   border-radius: 30px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 10%);
   overflow: hidden;
+  cursor: zoom-in;
 }
 
 .portrait img {
   display: block;
   width: 100%;
   height: auto;
-  mix-blend-mode: multiply;
+  transition: scale 0.4s ease;
 }
 
 .headline {
@@ -206,7 +222,7 @@ a:focus-visible {
   margin: 0 0 14px;
   font-size: 1.65rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1.2;
   text-wrap: balance;       /* when it wraps, the lines come out a similar length */
 }
@@ -242,6 +258,7 @@ a:focus-visible {
   border-radius: 980px;     /* a very large radius makes a pill shape */
   color: var(--bg);
   font-weight: 500;
+  transition: background-color 0.2s ease, scale 0.15s ease;
 }
 
 .button:hover {
@@ -249,11 +266,60 @@ a:focus-visible {
   text-decoration: none;
 }
 
+/* The enlarged photo. The popover attribute in the HTML opens and closes it;
+   these rules only decide how it looks. It stays hidden in older browsers. */
+.lightbox {
+  display: none;
+}
+
+.lightbox:popover-open {
+  display: block;
+  width: min(84vw, 420px);
+  padding: 0;
+  background-color: var(--bg);
+  border: 0;
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgb(0 0 0 / 35%);
+  overflow: hidden;
+}
+
+/* The rest of the page dims and blurs behind the enlarged photo */
+.lightbox::backdrop {
+  background-color: rgb(29 29 31 / 55%);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.portrait:hover img {
+  scale: 1.06;              /* the photo zooms slightly inside its tile */
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 7px 14px;
+  background-color: rgb(255 255 255 / 88%);
+  border: 0;
+  border-radius: 980px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: scale 0.15s ease;
+}
+
 
 /* ---------- 5. Section layout ---------- */
 
 /* Two columns: a narrow one for the section title and a wide one
-   for the details. A hairline separates each section from the last. */
+   for the details. A thin line separates each section from the last. */
 .spec {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -278,21 +344,22 @@ a:focus-visible {
 }
 
 .subhead {
-  margin: 44px 0 18px;
+  margin: 44px 0 14px;
   font-size: 1.2rem;
 }
 
-/* The opening line of the About section, set large in the serif */
+/* The opening line of the About section, set larger than the body text */
 .statement {
-  max-width: 26em;
+  max-width: 27em;
   margin-bottom: 26px;
-  font-family: "Libre Baskerville", Georgia, serif;
-  font-size: 1.42rem;
-  line-height: 1.4;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.32;
 }
 
 
-/* ---------- 6. Entries and fact lists ---------- */
+/* ---------- 6. Entries, fact lists and document links ---------- */
 
 .entry {
   padding: 22px 0;
@@ -329,18 +396,26 @@ a:focus-visible {
   color: var(--muted);
 }
 
+/* Links to a certificate or other document under an entry */
+.docs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.94rem;
+}
+
 .entry > :last-child {
   margin-bottom: 0;         /* no extra gap under the last line of an entry */
 }
 
-/* Label and value pairs: location, languages, contact details */
+/* Label and value pairs: addresses, languages, contact details */
 .facts {
   margin: 30px 0 0;
 }
 
 .facts div {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 170px 1fr;
   gap: 16px;
   padding: 13px 0;
   border-top: 1px solid var(--line);
@@ -357,12 +432,40 @@ a:focus-visible {
 }
 
 
-/* ---------- 7. Cards ---------- */
+/* ---------- 7. Offers list ---------- */
+
+/* Two columns of university names, each with its course underneath */
+.offers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offers li {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.offers strong {
+  display: block;
+  font-weight: 600;
+}
+
+.offers span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+
+/* ---------- 8. Cards ---------- */
 
 .card-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
   margin-bottom: 40px;
 }
 
@@ -370,17 +473,18 @@ a:focus-visible {
   margin-bottom: 0;
 }
 
+/* Each card is a Flexbox column, so its link always sits at the bottom */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 26px 28px 28px;
   background-color: var(--surface);
-  border-radius: 18px;
+  border-radius: 20px;
 }
 
-.card h3,
-.card h4 {
+.card h3 {
   margin-bottom: 6px;
 }
 
@@ -398,9 +502,10 @@ a:focus-visible {
 /* A short line quoted from the letter */
 .card blockquote {
   margin: 0 0 18px;
-  font-family: "Libre Baskerville", Georgia, serif;
-  font-size: 1.12rem;
-  line-height: 1.45;
+  font-size: 1.18rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.36;
 }
 
 /* Link to the document; margin-top: auto pushes it to the bottom of the card */
@@ -409,14 +514,160 @@ a:focus-visible {
   padding-top: 16px;
 }
 
+.card .card-extra {
+  margin-top: 6px;
+}
 
-/* ---------- 8. Justified text ---------- */
+/* The main link is stretched over the whole card with an invisible layer,
+   so the card can be clicked or tapped anywhere. */
+.card-link a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+}
+
+/* Other links inside a card sit above that layer so they still work */
+.card .tag a,
+.card .card-extra a {
+  position: relative;
+  z-index: 1;
+}
+
+.card .tag a {
+  text-decoration: underline;
+}
+
+/* The keyboard focus outline goes around the whole card */
+.card-link a:focus-visible {
+  outline: none;
+}
+
+.card-link a:focus-visible::after {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+/* ---------- 9. Activities grid ----------
+   A six-column grid. Tiles span two or three columns, and one
+   tile is two rows tall, so the block reads as one composition
+   instead of a table followed by a list. */
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  grid-column: span 3;
+  min-width: 0;
+  padding: 22px 24px 24px;
+  background-color: var(--surface);
+  border-radius: 22px;
+}
+
+.tile-tall {
+  grid-row: span 2;
+}
+
+.tile-small {
+  grid-column: span 2;
+}
+
+.tile-dark {
+  background-color: var(--ink);
+  color: var(--on-dark);
+}
+
+.tile-tint {
+  background-color: var(--tint);
+}
+
+.tile-date {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-dark .tile-date {
+  color: var(--muted-on-dark);
+}
+
+/* The result or role is the large line in each tile */
+.tile-figure {
+  margin: 14px 0 0;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.tile-tall .tile-figure {
+  margin-top: auto;         /* pushed to the bottom of the tall tile */
+  font-size: 2.9rem;
+}
+
+.tile-small .tile-figure {
+  margin-top: 0;
+  font-size: 1.55rem;
+}
+
+.tile-label {
+  margin: 6px 0 0;
+  font-size: 0.96rem;
+  line-height: 1.4;
+}
+
+.tile-doc {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}
+
+.tile h3 {
+  margin-bottom: 10px;
+}
+
+.tile-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.96rem;
+}
+
+.tile-list li {
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+
+.tile-list strong {
+  display: block;
+  font-weight: 600;
+}
+
+.tile-dark .tile-doc a {
+  color: var(--accent-on-dark);
+}
+
+.tile-dark .tile-doc a:focus-visible {
+  outline-color: var(--accent-on-dark);
+}
+
+
+/* ---------- 10. Justified text ---------- */
 
 /* Sentences are justified, so both edges of the text line up with
    the thin lines above and below. The two selectors pick the paragraphs
    that sit directly inside a section or an entry. :not() leaves out the
    large opening line and the place names, which read better left-aligned.
-   Cards are narrow, so their text is not justified either.
+   Cards and tiles are narrow, so their text is not justified either.
    hyphens: auto lets a long word break at the end of a line, which
    keeps the gaps between words even. */
 .spec-body > p:not(.statement),
@@ -426,72 +677,65 @@ a:focus-visible {
   hyphens: auto;
 }
 
-
-/* ---------- 9. Activities table and list ---------- */
-
-.spec-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.spec-table th,
-.spec-table td {
-  padding: 13px 16px 13px 0;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
-}
-
-.spec-table th {
-  padding-top: 0;
-  color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 500;
-}
-
-.spec-table th:first-child,
-.spec-table td:first-child {
-  width: 112px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.spec-table th:last-child,
-.spec-table td:last-child {
-  width: 30%;
-  padding-right: 0;
-}
-
-.plain-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 32px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.plain-list li {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+/* A little air when a description comes straight after its title */
+.entry-head + p:not(.place) {
+  margin-top: 6px;
 }
 
 
-/* ---------- 10. Footer ---------- */
+/* ---------- 11. Letters band, contact band and footer ---------- */
 
+/* A light grey band across the full width, with white cards on it */
+.band {
+  background-color: var(--surface);
+}
+
+.band .spec {
+  border-top: none;
+}
+
+.band .card {
+  background-color: var(--bg);
+}
+
+/* The page ends on a dark band: contact details, then the footer line */
 #site-footer {
+  background-color: var(--ink);
+  color: var(--on-dark);
+}
+
+#site-footer .spec {
+  border-top: none;
+}
+
+#site-footer .facts div {
+  border-top-color: var(--line-on-dark);
+}
+
+#site-footer .facts dt {
+  color: var(--muted-on-dark);
+}
+
+#site-footer a {
+  color: var(--accent-on-dark);
+}
+
+#site-footer a:focus-visible {
+  outline-color: var(--accent-on-dark);
+}
+
+.footer-bar {
   display: flex;
   justify-content: space-between;
   max-width: 1028px;
   margin: 0 auto;
   padding: 22px 24px 44px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
+  border-top: 1px solid var(--line-on-dark);
+  color: var(--muted-on-dark);
   font-size: 0.86rem;
 }
 
-#site-footer p {
+.copyright {
   margin: 0;
 }
 
@@ -504,51 +748,162 @@ a:focus-visible {
 }
 
 
-/* ---------- 11. Responsive rules ---------- */
+/* ---------- 12. Motion ----------
+   Small movements that respond to the visitor. Everything here
+   is switched off for people who have asked their device to
+   reduce motion. */
 
-/* Tablets and phones: the two columns become one, so each title sits
-   above its section, and the menu becomes one slim row. */
+/* Buttons press in slightly when clicked or tapped
+   (each button's own rule sets the transition that makes this smooth) */
+.button:active,
+.pill:active,
+.menu-open:active,
+.menu-close:active,
+.lightbox-close:active {
+  scale: 0.96;
+}
+
+/* Used when the page first loads: each part of the intro fades in and rises */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+
+/* Used when the enlarged photo opens */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Glide to a section when a menu link is clicked */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* The photo, name, headline, sentence and buttons arrive one after another */
+  #intro > * {
+    animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  #intro > :nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  #intro > :nth-child(3) {
+    animation-delay: 0.16s;
+  }
+
+  #intro > :nth-child(4) {
+    animation-delay: 0.24s;
+  }
+
+  #intro > :nth-child(6) {
+    animation-delay: 0.32s;
+  }
+
+  .lightbox:popover-open {
+    animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* A card that opens a document lifts a little under the pointer */
+  .card-open {
+    transition: translate 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card-open:hover {
+    translate: 0 -3px;
+    box-shadow: 0 14px 30px rgb(0 0 0 / 8%);
+  }
+}
+
+
+/* ---------- 13. Responsive rules ---------- */
+
+/* Tablets and phones: the two columns become one. The links move into a
+   full-screen menu, and each section title becomes a slim bar that
+   stays under the header while its section is on screen. */
 @media (max-width: 860px) {
   h1 {
-    font-size: 3.4rem;
+    font-size: 3.5rem;
   }
 
-  /* The menu still stays at the top. If the links do not fit across
-     the screen, the row scrolls sideways instead of wrapping onto
-     extra lines, so it never takes up more than one line. */
-  #site-nav {
-    height: auto;
-    padding: 0;
+  /* The header is solid white here. A blurred header would trap the
+     full-screen menu inside its own box. */
+  #site-header {
+    background-color: var(--bg);
+    backdrop-filter: none;
   }
 
-  .brand {
-    display: none;          /* the name is already the first thing on the page */
+  .menu-open,
+  .menu-close {
+    display: block;
+    padding: 10px 18px;     /* a comfortable size to tap */
+    background-color: var(--surface);
+    border-radius: 980px;
+    color: var(--ink);
+    font-size: 0.86rem;
+    font-weight: 500;
+    transition: scale 0.15s ease;
+  }
+
+  .menu-close {
+    align-self: flex-end;   /* top right, where the Menu button was */
+  }
+
+  .menu-open:hover,
+  .menu-close:hover {
+    text-decoration: none;
+  }
+
+  /* The menu covers the whole screen but is invisible until its id is the
+     target of the link, which is what clicking "Menu" does. Choosing a
+     section changes the target, so the menu closes by itself. */
+  #menu {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 24px 40px;
+    background-color: var(--bg);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+  }
+
+  #menu:target {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
   }
 
   .nav-links {
+    flex-direction: column;
     gap: 0;
-    width: 100%;
-    padding: 0 12px;
-    overflow-x: auto;
-    scrollbar-width: none;  /* no scrollbar under the links */
-
-    /* the right edge fades out, a hint that there are more links */
-    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    margin-top: 26px;
+    translate: 0 14px;
+    transition: translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  .nav-links li:last-child {
-    padding-right: 28px;    /* lets the last link scroll clear of the faded edge */
+  #menu:target .nav-links {
+    translate: 0 0;         /* the links slide up into place as the menu opens */
   }
 
   .nav-links a {
     display: block;
-    padding: 13px 12px;     /* tall enough to tap comfortably */
-    font-size: 0.9rem;
-    white-space: nowrap;
-  }
-
-  .nav-links a:focus-visible {
-    outline-offset: -4px;   /* keeps the focus ring inside the scrolling row */
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
   }
 
   #intro {
@@ -557,52 +912,42 @@ a:focus-visible {
 
   .spec {
     grid-template-columns: 1fr;
-    padding: 52px 24px;
-    scroll-margin-top: 47px;   /* the slim menu is about 48px tall */
+    padding: 0 24px 52px;
+    scroll-margin-top: 52px;
   }
 
+  /* The section title: a slim bar across the full width that sticks
+     just below the header, like the left-hand titles do on a laptop. */
   .spec h2 {
-    position: static;
-    margin-bottom: 26px;
+    top: 52px;
+    z-index: 5;
+    margin: 0 -24px 24px;
+    padding: 13px 24px;
+    background-color: rgb(255 255 255 / 96%);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    font-size: 1.3rem;
+  }
+
+  .band .spec h2 {
+    background-color: rgb(245 245 247 / 96%);
+  }
+
+  #site-footer .spec h2 {
+    background-color: rgb(29 29 31 / 96%);
+    border-bottom-color: var(--line-on-dark);
   }
 }
 
-/* Phones: thumb-sized buttons, one card per row, smaller headings
-   and dates under their titles */
+/* Phones: thumb-sized buttons, cards that swipe sideways, a simpler
+   activities grid and dates under their titles */
 @media (max-width: 600px) {
   html {
     font-size: 100%;
   }
 
-  /* The four intro links become a 2 x 2 grid of large pill buttons */
-  .quick-links {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 28px;
-  }
-
-  .pill,
-  .button {
-    display: block;
-    padding: 12px 6px;
-    border-radius: 980px;
-    font-size: 0.94rem;
-    font-weight: 500;
-    text-align: center;
-    white-space: nowrap;    /* each label stays on one line */
-  }
-
-  .pill {
-    background-color: var(--surface);
-  }
-
   h1 {
-    font-size: 2.6rem;
-  }
-
-  h2 {
-    font-size: 1.6rem;
+    font-size: 2.7rem;
   }
 
   #intro {
@@ -623,12 +968,37 @@ a:focus-visible {
     font-size: 1.06rem;
   }
 
+  /* The four intro links become a 2 x 2 grid of large pill buttons */
+  .quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .pill,
+  .button {
+    display: block;
+    padding: 12px 6px;
+    border-radius: 980px;
+    font-size: 0.94rem;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;    /* each label stays on one line */
+    transition: scale 0.15s ease;
+  }
+
+  .pill {
+    background-color: var(--bg);
+    box-shadow: 0 0 0 1px var(--line);   /* a thin outline drawn with a shadow */
+  }
+
   .statement {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .spec {
-    padding: 44px 24px;
+    padding-bottom: 44px;
   }
 
   .entry-head {
@@ -641,69 +1011,76 @@ a:focus-visible {
     gap: 2px;
   }
 
-  .card-grid,
-  .plain-list {
+  .offers {
     grid-template-columns: 1fr;
   }
 
-  /* Three columns are too tight on a phone, so each table row
-     stacks into a small block: date, then activity, then result.
-     The header row is moved off screen but kept for screen readers. */
-  .spec-table thead {
-    position: absolute;
-    left: -9999px;
+  /* Cards sit in one row that swipes sideways and snaps to each card.
+     The next card peeks in from the right as a hint. */
+  .card-grid {
+    display: flex;
+    gap: 12px;
+    margin: 0 -24px 36px;
+    padding: 4px 24px 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 24px;
+    scrollbar-width: none;
   }
 
-  .spec-table tr {
-    display: block;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
+  .card {
+    flex: 0 0 84%;
+    padding: 24px 24px 26px;
+    scroll-snap-align: start;
   }
 
-  .spec-table tr:first-child {
-    padding-top: 0;
+  /* Activities: two columns. Only the three short tiles share a row. */
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
-  .spec-table td,
-  .spec-table td:first-child,
-  .spec-table td:last-child {
-    display: block;
-    width: auto;
-    padding: 0;
-    border-bottom: none;
+  .tile {
+    grid-column: span 2;
+    padding: 20px 20px 22px;
   }
 
-  .spec-table td:first-child {
-    font-size: 0.9rem;
+  .tile-tall {
+    grid-row: auto;
   }
 
-  .spec-table td:nth-child(2) {
-    font-weight: 600;
+  .tile-small {
+    grid-column: span 1;
   }
 
-  .spec-table td:last-child {
-    color: var(--muted);
+  .tile-full {
+    grid-column: span 2;
   }
 
-  #site-footer {
+  .tile-figure {
+    font-size: 1.8rem;
+  }
+
+  .tile-tall .tile-figure {
+    margin-top: 14px;
+    font-size: 2.3rem;
+  }
+
+  .tile-small .tile-figure {
+    font-size: 1.35rem;
+  }
+
+  .footer-bar {
     flex-direction: column;
     gap: 8px;
   }
 }
 
-/* Glide to a section when a nav link is clicked, unless the
-   visitor has asked their device to reduce motion */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
 
-
-/* ---------- 12. Print styles ----------
-   Printing the page (or "Save as PDF") gives a clean two-page
-   document: no menu, photo or buttons, smaller type, and a
-   narrower title column. */
+/* ---------- 14. Print styles ----------
+   Printing the page (or "Save as PDF") gives a clean document:
+   no menu, photo or buttons, smaller type, and a narrower
+   title column. */
 
 @media print {
   @page {
@@ -718,16 +1095,19 @@ a:focus-visible {
     line-height: 1.36;
   }
 
-  /* The menu, photo, buttons and footer are no use on paper. The Contact
-     section is hidden too, because the contact line under the name replaces it. */
+  /* The menu, photo, buttons and the contact band are no use on paper.
+     The contact line under the name replaces them. */
   #site-header,
   #site-footer,
-  #contact,
   .skip-link,
   .portrait,
+  .lightbox,
   .quick-links,
+  .docs,
+  .tile-doc,
   .card blockquote,
-  .card .card-link {
+  .card .card-link,
+  .card .card-extra {
     display: none;
   }
 
@@ -757,14 +1137,13 @@ a:focus-visible {
 
   /* Never leave a heading alone at the bottom of a page */
   h2,
-  h3,
-  h4 {
+  h3 {
     break-after: avoid;
   }
 
   #intro {
-    max-width: none;
     padding: 0 0 12px;
+    background-image: none;
     text-align: left;
   }
 
@@ -791,7 +1170,10 @@ a:focus-visible {
     position: static;
     float: left;
     width: 112px;
-    margin-bottom: 0;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border-bottom: none;
   }
 
   .spec-body {
@@ -826,13 +1208,26 @@ a:focus-visible {
   }
 
   .facts div {
+    grid-template-columns: 130px 1fr;
+    padding: 3px 0;
+  }
+
+  .offers {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 4px;
+  }
+
+  .offers li {
     padding: 3px 0;
   }
 
   .card-grid {
+    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin-bottom: 10px;
+    margin: 0 0 10px;
+    padding: 0;
+    overflow: visible;
   }
 
   .card {
@@ -842,8 +1237,7 @@ a:focus-visible {
     border-radius: 6px;
   }
 
-  .card h3,
-  .card h4 {
+  .card h3 {
     margin-bottom: 2px;
   }
 
@@ -851,25 +1245,65 @@ a:focus-visible {
     margin-top: 3px;
   }
 
-  .spec-table th,
-  .spec-table td {
-    padding-top: 4px;
-    padding-bottom: 4px;
+  /* The tiles print as plain outlined boxes, three to a row */
+  .bento {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
   }
 
-  .plain-list {
-    grid-template-columns: 1fr 1fr;
+  .tile {
+    grid-column: span 2;
+    padding: 6px 9px 7px;
+    background-color: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
   }
 
-  .plain-list li {
-    padding: 4px 0;
+  .tile-tall {
+    grid-row: auto;
   }
 
-  /* Keep each block whole instead of splitting it across two pages */
+  .tile-figure,
+  .tile-tall .tile-figure,
+  .tile-small .tile-figure {
+    margin-top: 2px;
+    font-size: 1.15rem;
+  }
+
+  .tile-label {
+    margin-top: 2px;
+  }
+
+  .tile-dark .tile-date {
+    color: var(--muted);
+  }
+
+  .tile h3 {
+    margin-bottom: 2px;
+  }
+
+  .tile-list li {
+    padding: 2px 0;
+  }
+
+  .band {
+    background-color: transparent;
+  }
+
+  .band .spec {
+    border-top: 1px solid var(--line);
+  }
+
   .entry,
   .card,
-  tr,
-  .plain-list li {
+  .tile,
+  .offers li {
     break-inside: avoid;
+  }
+
+  /* Nothing should be caught half-way through an animation on paper */
+  #intro > * {
+    animation: none;
   }
 }
